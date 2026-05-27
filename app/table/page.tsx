@@ -120,7 +120,7 @@ export default function TableAssignment() {
             </p>
             <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.875rem', lineHeight: 1.7, margin: 0 }}>
               Work together to select the tools you need from the menu. Build your ideal technology stack
-              to deliver the request. You can choose as many tools as you like — but every choice counts.
+              to deliver the request. You may select <strong style={{ color: '#fff' }}>up to 3 tools per category</strong> — choose wisely, every selection counts.
             </p>
           </div>
 
@@ -131,8 +131,8 @@ export default function TableAssignment() {
             </p>
             <ul style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.875rem', lineHeight: 1.9, paddingLeft: '1.1rem', margin: 0 }}>
               <li>Order across multiple categories.</li>
-              <li>Choose as many tools as you think you need.</li>
-              <li>No restrictions — order what your team believes is best.</li>
+              <li>Up to 3 tools per category, across all requirements.</li>
+              <li>Prioritize what your team truly needs to deliver.</li>
               <li>Finalize your order on the Order Pad before submitting.</li>
             </ul>
           </div>

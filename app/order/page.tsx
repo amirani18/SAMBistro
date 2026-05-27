@@ -182,7 +182,6 @@ export default function OrderPad() {
             background: '#111D3C',
             border: '1px solid #1C2E5C',
             borderRadius: 4,
-            overflow: 'hidden',
             marginBottom: '1.5rem',
           }}
         >
@@ -270,7 +269,9 @@ export default function OrderPad() {
                     style={{
                       position: 'absolute',
                       zIndex: 100,
-                      top: '100%',
+                      ...(i >= SERVICE_REQUIREMENTS.length - 2
+                        ? { bottom: '100%', top: 'auto' }
+                        : { top: '100%', bottom: 'auto' }),
                       left: 0,
                       right: 0,
                       background: '#0D1830',
@@ -278,7 +279,7 @@ export default function OrderPad() {
                       borderRadius: 3,
                       maxHeight: 280,
                       overflowY: 'auto',
-                      boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+                      boxShadow: '0 -8px 24px rgba(0,0,0,0.5)',
                     }}
                   >
                     {Object.entries(TOOL_CATEGORIES).map(([cat, tools]) => (
