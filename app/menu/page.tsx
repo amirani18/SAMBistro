@@ -42,6 +42,9 @@ export default function DigitalMenu() {
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', fontStyle: 'italic', margin: 0 }}>
             Browse today&apos;s available tools. Use this as your reference when placing your order.
           </p>
+          <p style={{ color: '#C9A84C', fontSize: '0.75rem', margin: '0.5rem 0 0', letterSpacing: '0.05em' }}>
+            You may select up to 3 tools per category across all service requirements.
+          </p>
         </div>
 
         {/* Menu grid */}
@@ -93,9 +96,12 @@ export default function DigitalMenu() {
                 style={{
                   height: 1,
                   background: 'linear-gradient(90deg, transparent, #8B7234, transparent)',
-                  marginBottom: '1rem',
+                  marginBottom: '0.5rem',
                 }}
               />
+              <p style={{ textAlign: 'center', fontSize: '0.6rem', letterSpacing: '0.1em', color: 'rgba(201,168,76,0.5)', textTransform: 'uppercase', margin: '0 0 0.75rem' }}>
+                Max 3 selections
+              </p>
 
               {/* Tools list */}
               <ul style={{ margin: 0, padding: 0, listStyle: 'none', textAlign: 'center' }}>
@@ -129,7 +135,7 @@ export default function DigitalMenu() {
           }}
         >
           <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.8rem', fontStyle: 'italic', margin: 0 }}>
-            Copy a menu item to your Order Pad. You may choose as many tools as you think you need.
+            Use this menu as your reference when placing your order. You may select up to 3 tools per category.
             Digital Sherpa may be used during the Project Management section.
           </p>
         </div>

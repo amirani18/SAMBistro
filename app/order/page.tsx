@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import SiteHeader from '@/components/SiteHeader';
 import StepIndicator from '@/components/StepIndicator';
@@ -64,10 +64,16 @@ export default function OrderPad() {
   const toggleTool = (req: string, tool: string) => {
     setOrder(prev => {
       const current = prev[req].selected_tools;
-      const updated = current.includes(tool)
-        ? current.filter(t => t !== tool)
-        : [...current, tool];
-      return { ...prev, [req]: { ...prev[req], selected_tools: updated } };
+      if (current.includes(tool)) {
+        return { ...prev, [req]: { ...prev[req], selected_tools: current.filter(t => t !== tool) } };
+      }
+      // Enforce global 3-per-category cap
+      const cat = Object.entries(TOOL_CATEGORIES).find(([, tools]) => tools.includes(tool))?.[0];
+      if (cat) {
+        const allSelected = Object.values(prev).flatMap(r => r.selected_tools);
+        if (allSelected.filter(t => TOOL_CATEGORIES[cat].includes(t)).length >= 3) return prev;
+      }
+      return { ...prev, [req]: { ...prev[req], selected_tools: [...current, tool] } };
     });
     setSaved(false);
   };
@@ -116,6 +122,16 @@ export default function OrderPad() {
 
   const totalTools = [...new Set(Object.values(order).flatMap(r => r.selected_tools))].length;
 
+  const categoryCounts = useMemo(() => {
+    const allSelected = Object.values(order).flatMap(r => r.selected_tools);
+    return Object.fromEntries(
+      Object.entries(TOOL_CATEGORIES).map(([cat, tools]) => [
+        cat,
+        allSelected.filter(t => tools.includes(t)).length,
+      ])
+    );
+  }, [order]);
+
   return (
     <div style={{ minHeight: '100vh', background: '#070D22', display: 'flex', flexDirection: 'column' }}>
       <SiteHeader />
@@ -147,6 +163,9 @@ export default function OrderPad() {
           <GoldDivider thick />
           <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.8rem', margin: 0, fontStyle: 'italic' }}>
             For each service requirement, select the tool(s) your team would use and explain why.
+          </p>
+          <p style={{ color: '#C9A84C', fontSize: '0.75rem', margin: '0.5rem 0 0', letterSpacing: '0.05em' }}>
+            Limit: up to 3 tools per category, across all requirements.
           </p>
         </div>
 
@@ -273,33 +292,48 @@ export default function OrderPad() {
                             color: '#C9A84C',
                             background: 'rgba(201,168,76,0.06)',
                             borderBottom: '1px solid #1C2E5C',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
                           }}
                         >
-                          {cat}
+                          <span>{cat}</span>
+                          <span style={{ color: categoryCounts[cat] >= 3 ? '#E07B39' : 'rgba(201,168,76,0.6)' }}>
+                            {categoryCounts[cat]}/3
+                          </span>
                         </div>
-                        {tools.map(tool => (
-                          <label
-                            key={tool}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.5rem',
-                              padding: '0.45rem 0.75rem',
-                              cursor: 'pointer',
-                              fontSize: '0.85rem',
-                              color: order[req].selected_tools.includes(tool) ? '#E8CC80' : 'rgba(255,255,255,0.7)',
-                              background: order[req].selected_tools.includes(tool) ? 'rgba(201,168,76,0.08)' : 'transparent',
-                              borderBottom: '1px solid rgba(255,255,255,0.03)',
-                            }}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={order[req].selected_tools.includes(tool)}
-                              onChange={() => toggleTool(req, tool)}
-                            />
-                            {tool}
-                          </label>
-                        ))}
+                        {tools.map(tool => {
+                          const atCap = categoryCounts[cat] >= 3 && !order[req].selected_tools.includes(tool);
+                          return (
+                            <label
+                              key={tool}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
+                                padding: '0.45rem 0.75rem',
+                                cursor: atCap ? 'not-allowed' : 'pointer',
+                                fontSize: '0.85rem',
+                                color: order[req].selected_tools.includes(tool)
+                                  ? '#E8CC80'
+                                  : atCap
+                                  ? 'rgba(255,255,255,0.25)'
+                                  : 'rgba(255,255,255,0.7)',
+                                background: order[req].selected_tools.includes(tool) ? 'rgba(201,168,76,0.08)' : 'transparent',
+                                borderBottom: '1px solid rgba(255,255,255,0.03)',
+                                opacity: atCap ? 0.4 : 1,
+                              }}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={order[req].selected_tools.includes(tool)}
+                                onChange={() => toggleTool(req, tool)}
+                                disabled={atCap}
+                              />
+                              {tool}
+                            </label>
+                          );
+                        })}
                       </div>
                     ))}
                     <div style={{ padding: '0.5rem', borderTop: '1px solid #1C2E5C' }}>
